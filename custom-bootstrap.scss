@@ -1,0 +1,66 @@
+// lo scopo di questo file è creare una versione personalizzata di BS
+// con eventuali modifiche a colori, breakpoints, spacings, etc.
+// la versione compilata di questo file sarà una versione COMPLETA di BS
+// ma personalizzata, che linkeremo nei nostri documenti HTML al posto
+// di quella "standard" che normalmente preleviamo dalla CDN
+
+// via! proviamo a modificare i COLORI di bootstrap
+// i colori di BS, come tantissime altre variabili, sono contenuti
+// nel partial chiamato "_variables.scss"
+
+// quindi prima di tutto importo il partial che definisce la mappa
+// colori principale di bootstrap, "$theme-colors"
+@import './scss/functions'; // questo partial serve per far funzionare "_variables"
+@import './scss/variables';
+
+// a questo punto tutte le mappe principali (colori, spacings, breakpoints etc.)
+// sono definiti, e possiamo alterarli
+
+// modifichiamo un colore di default e aggiungiamone uno nuovo
+$new-primary: rgb(170, 6, 170);
+$new-info: rgb(160, 177, 29);
+$problem: rgb(175, 15, 47);
+
+// bene, ora andiamo a FONDERE questi nuovi colori nella mappa "$theme-colors"
+// creo una MIA versione di $theme-colors, la chiameremo $new-theme-colors
+$new-theme-colors: (
+  primary: $new-primary,
+  info: $new-info,
+  problem: $problem,
+);
+
+// ora devo solo FONDERE, APPORRE la mia
+// $new-theme-colors sulla originale $theme-colors
+
+// per questa operazione di "fusione" utilizzerò un metodo integrato di SASS
+$theme-colors: map-merge($theme-colors, $new-theme-colors);
+// ora theme-colors è una mappa con un colore in più (problem) e con alcuni
+// valori cambiati; i valori che non ho toccato (es. danger) sono rimasti inalterati
+
+// ora i colori sono stati ri-definiti, ma BS li utilizza in partial successivi
+// per creare i bottoni, gli alert, i tooltip etc.
+// quindi ora devo importare tutti i partials successivi in modo che utilizzino
+// la mia nuova mappa colore
+
+// cambiamo gli spacings, inventiamo uno spacer da 6
+$new-spacers: (
+  6: $spacer * 4,
+);
+
+// fare il merge
+$spacers: map-merge($spacers, $new-spacers);
+
+// aggiungiamo un breakpoint
+$new-grid-breakpoints: (
+  grossissimo: 1600px,
+);
+
+// faccio il merge
+$grid-breakpoints: map-merge($grid-breakpoints, $new-grid-breakpoints);
+
+// importo ora bootstrap.scss che si occuperà di importare tutti i partial successivi
+@import './scss/bootstrap.scss';
+// il flag !default alla fine di OGNI variabile bootstrap definita in _variables
+// ma anche in tutti gli altri partials ragiona così: una variabile viene definita
+// SOLO se al momento non esiste già; se una variabile invece è già definita,
+// il flag !default si occupa di NON sovrascriverne il valore.
